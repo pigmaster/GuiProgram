@@ -1,27 +1,24 @@
 import sys
 
 import time
-from PyQt5 import QtGui, QtWidgets, uic
+from PyQt5 import uic
 from PyQt5.QtCore import QThread, QObject, pyqtSignal, pyqtSlot
-from PyQt5.QtWidgets import QApplication, QPushButton, QTextEdit, QVBoxLayout, QWidget, QMainWindow
+from PyQt5.QtWidgets import QApplication,QWidget
 
 qtCreatorFile = "MainGUI_2.ui"  # Enter file here.
-
-
-
 
 class UpdateLogger(QObject):
     finished = pyqtSignal(str)
     update = pyqtSignal(str)
 
-
     def __init__(self, delay,parent = None):
         super().__init__(None)
         self.delay = delay
         self.threadName = QThread.currentThread().objectName()
-        print("Thread Name is: " + self.threadName)
+        print("Initializing new thread with delay {}".format(self.delay))
+        print("Thread with delay {} is named: {}".format(self.delay,self.threadName))
         self.threadId = int(QThread.currentThreadId())
-        print("Thread ID is: {}".format(self.threadId))
+        print("Thread with delay {} has an ID: {}".format(self.delay,self.threadId))
     def running(self):
         x = 0
         print("Thread with Delay {} has started".format(self.delay))
@@ -43,6 +40,7 @@ class MainWindow(QWidget):
         mainThreadID = int(QThread.currentThread().currentThreadId())
         print("MainThread ID: {}".format(mainThreadID))
         QThread.currentThread().setObjectName("Thread_Main")
+        print("MainThread name is: {}".format(QThread.currentThread().objectName()))
 
         self.pb1.clicked.connect(self.pb1Action)
         self.pb1Object = UpdateLogger(2)
@@ -74,30 +72,14 @@ class MainWindow(QWidget):
         self.pb1Thread.start()
         self.pb1.setEnabled(False)
 
-    def pb1finished(self):
-        self.tbLog.append("Finished: " + self.le1.text())
-        self.pb1.setEnabled(True)
-
-    def pb1update(self):
-        app.processEvents()
-        self.tbLog.append("U " + self.le1.text())
-
     def pb2Action(self):
         self.pb2Thread.start()
         self.pb2.setEnabled(False)
 
-    def pb2finished(self):
-        self.tbLog.append("Finished: " + self.le2.text())
-        self.pb2.setEnabled(True)
-
-    def pb2update(self):
-        app.processEvents()
-        self.tbLog.append("U " + self.le2.text())
-
-
     def pb3Action(self):
 
         self.tbLog.append(self.le3.text())
+
 
     @pyqtSlot(str)
     def updateLogger(self, txt="??????"):
